@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DEV.PORTFOLIO · STAGE SELECT</title>
+<meta name="description" content="Portfolio de Nicolás Pereira, desarrollador Back-End y QA Automation autodidacta.">
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+<style>
+:root {
+  --black:   #080810;
+  --dark:    #0f0f1a;
+  --panel:   #161625;
+  --card:    #1c1c30;
+  --border:  #2e2e50;
+  --violet:  #7c3aed;
+  --violet2: #a855f7;
+  --violet3: #c084fc;
+  --spark:   #e879f9;
+  --gray1:   #3f3f60;
+  --gray2:   #6b6b9a;
+  --gray3:   #9898c8;
+  --white:   #e8e8ff;
+  --ring:    2px solid var(--violet);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Press Start 2P', monospace;
+  background: var(--black);
+  color: var(--white);
+  min-height: 100vh;
+  overflow-x: hidden;
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Crect x='0' y='0' width='6' height='6' fill='%237c3aed'/%3E%3Crect x='6' y='0' width='6' height='6' fill='%23a855f7'/%3E%3Crect x='0' y='6' width='6' height='6' fill='%23a855f7'/%3E%3Crect x='6' y='6' width='6' height='6' fill='%237c3aed'/%3E%3C/svg%3E") 4 4, auto;
+}
+
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 9999;
+  background: repeating-linear-gradient(
+    0deg, transparent, transparent 3px,
+    rgba(0,0,0,0.18) 3px, rgba(0,0,0,0.18) 4px
+  );
+  pointer-events: none;
+}
+
+.starfield { position: fixed; inset: 0; z-index: 0; overflow: hidden; }
+.star {
+  position: absolute; width: 2px; height: 2px;
+  background: var(--gray2); image-rendering: pixelated;
+  animation: twinkle var(--d, 3s) var(--delay, 0s) infinite;
+}
+@keyframes twinkle {
+  0%,100% { opacity: 0.2; transform: scale(1); }
+  50%      { opacity: 1;   transform: scale(1.5); }
+}
+
+.ground-strip {
+  position: fixed; bottom: 0; left: 0; right: 0; height: 48px;
+  background: repeating-linear-gradient(90deg, var(--violet) 0px, var(--violet) 16px, var(--panel) 16px, var(--panel) 32px);
+  border-top: 4px solid var(--violet2); z-index: 10;
+  animation: scrollGround 2s linear infinite;
+}
+@keyframes scrollGround { from{background-position:0 0} to{background-position:-32px 0} }
+
+.sprite-wrap {
+  position: fixed; bottom: 48px; left: 60px; z-index: 20;
+  animation: bobY 0.4s steps(2) infinite;
+}
+@keyframes bobY { 0%,100%{bottom:52px} 50%{bottom:56px} }
+.sprite { width: 32px; height: 32px; image-rendering: pixelated; position: relative; }
+.sprite::before {
+  content:''; position: absolute;
+  box-shadow:
+    8px 0 0 0 var(--violet2), 12px 0 0 0 var(--violet2), 16px 0 0 0 var(--violet2),
+    4px 4px 0 0 var(--violet2), 8px 4px 0 0 var(--violet3), 12px 4px 0 0 var(--violet3), 16px 4px 0 0 var(--violet2), 20px 4px 0 0 var(--violet2),
+    4px 8px 0 0 var(--violet2), 8px 8px 0 0 var(--white), 12px 8px 0 0 var(--black), 16px 8px 0 0 var(--violet2),
+    4px 12px 0 0 var(--violet), 8px 12px 0 0 var(--violet), 12px 12px 0 0 var(--violet), 16px 12px 0 0 var(--violet),
+    4px 16px 0 0 var(--violet), 8px 16px 0 0 var(--violet2), 12px 16px 0 0 var(--violet2), 16px 16px 0 0 var(--violet),
+    4px 20px 0 0 var(--gray2), 8px 24px 0 0 var(--gray2), 16px 24px 0 0 var(--gray2);
+  width: 4px; height: 4px; background: transparent; top: 0; left: 0;
+}
+
+.speed-lines {
+  position: fixed; bottom: 60px; left: 0; width: 60px; z-index: 15;
+  display: flex; flex-direction: column; gap: 4px;
+}
+.speed-line {
+  height: 2px;
+  background: linear-gradient(to right, transparent, var(--violet2));
+  animation: speedLine var(--sd, .4s) var(--delay2, 0s) linear infinite;
+}
+@keyframes speedLine { from{opacity:0.8;width:100%} to{opacity:0;width:0%} }
+
+.container { position: relative; z-index: 5; max-width: 960px; margin: 0 auto; padding: 0 24px 120px; }
+
+nav {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 20px 32px; position: sticky; top: 0; z-index: 100;
+  background: rgba(8,8,16,0.92); border-bottom: 3px solid var(--violet);
+  backdrop-filter: blur(4px);
+}
+.nav-logo { font-size: 0.55rem; color: var(--violet2); letter-spacing: 2px; text-shadow: 0 0 12px var(--violet); animation: glitchText 8s infinite; }
+@keyframes glitchText {
+  0%,94%,100% { text-shadow: 0 0 12px var(--violet); transform: none; }
+  95% { transform: translate(-2px,0); text-shadow: 2px 0 var(--spark), -2px 0 var(--violet3); }
+  96% { transform: translate(2px,0); text-shadow: -2px 0 var(--spark), 2px 0 var(--violet3); }
+  97% { transform: none; text-shadow: 0 0 12px var(--violet); }
+}
+.nav-links { display: flex; gap: 28px; list-style: none; }
+.nav-links a {
+  font-size: 0.45rem; color: var(--gray3); text-decoration: none;
+  letter-spacing: 1px; transition: color .15s; position: relative;
+}
+.nav-links a::after {
+  content: ''; position: absolute; left: 0; bottom: -4px;
+  width: 0; height: 2px; background: var(--violet2); transition: width .2s;
+}
+.nav-links a:hover { color: var(--violet3); }
+.nav-links a:hover::after { width: 100%; }
+
+.hero {
+  min-height: 88vh; display: flex; flex-direction: column;
+  justify-content: center; padding: 80px 0 60px; position: relative;
+}
+.hero-tag { font-size: 0.5rem; color: var(--violet2); letter-spacing: 4px; margin-bottom: 24px; display: flex; align-items: center; gap: 12px; }
+.hero-tag::before { content: '▶'; animation: blink 1s step-end infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+.hero h1 { font-size: clamp(1.4rem, 4vw, 2.4rem); line-height: 1.6; letter-spacing: -1px; margin-bottom: 8px; }
+.hero h1 .line1 { color: var(--white); }
+.hero h1 .line2 { color: var(--violet2); text-shadow: 0 0 24px var(--violet), 0 0 48px var(--violet); }
+.hero h1 .line3 { color: var(--gray3); font-size: 70%; }
+
+.hero-sub { font-family: 'VT323', monospace; font-size: 1.4rem; color: var(--gray2); margin-top: 28px; max-width: 520px; line-height: 1.6; letter-spacing: 1px; }
+.hero-sub .typed-cursor { display: inline-block; width: 10px; height: 2px; background: var(--violet2); animation: blink .7s step-end infinite; vertical-align: middle; margin-left: 4px; }
+
+.cta-row { display: flex; gap: 16px; margin-top: 44px; flex-wrap: wrap; }
+
+.btn { font-family: 'Press Start 2P', monospace; font-size: 0.45rem; padding: 14px 22px; border: none; cursor: pointer; letter-spacing: 1px; text-decoration: none; transition: transform .1s, box-shadow .1s; image-rendering: pixelated; position: relative; display: inline-block; }
+.btn-primary { background: var(--violet); color: var(--white); box-shadow: 4px 4px 0 var(--violet3), inset -2px -2px 0 rgba(0,0,0,0.3); }
+.btn-primary:hover { transform: translate(-2px,-2px); box-shadow: 6px 6px 0 var(--violet3); }
+.btn-primary:active { transform: translate(2px,2px); box-shadow: 2px 2px 0 var(--violet3); }
+.btn-ghost { background: transparent; color: var(--violet2); border: 3px solid var(--violet); box-shadow: 4px 4px 0 var(--gray1); }
+.btn-ghost:hover { background: rgba(124,58,237,0.15); transform: translate(-2px,-2px); box-shadow: 6px 6px 0 var(--gray1); }
+
+.score-ui { position: absolute; right: 0; top: 80px; text-align: right; }
+.score-label { font-size: 0.4rem; color: var(--gray2); margin-bottom: 6px; letter-spacing: 2px; }
+.score-val { font-size: 1rem; color: var(--violet3); text-shadow: 0 0 16px var(--violet2); }
+.rings-row { display: flex; justify-content: flex-end; gap: 4px; margin-top: 10px; }
+.ring { width: 12px; height: 12px; border: 2px solid var(--violet2); border-radius: 50%; animation: ringPulse 2s ease-in-out infinite; animation-delay: var(--rd, 0s); }
+@keyframes ringPulse { 0%,100%{box-shadow:none} 50%{box-shadow: 0 0 8px var(--violet2);} }
+
+.section { padding: 80px 0 40px; }
+.section-header { display: flex; align-items: center; gap: 16px; margin-bottom: 48px; }
+.section-icon { font-size: 1.2rem; }
+.section-title { font-size: 0.7rem; letter-spacing: 3px; color: var(--violet2); text-shadow: 0 0 12px var(--violet); }
+.section-line { flex: 1; height: 3px; background: repeating-linear-gradient(90deg, var(--violet) 0, var(--violet) 8px, transparent 8px, transparent 12px); opacity: 0.5; }
+
+.about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.about-card { background: var(--panel); border: 3px solid var(--border); padding: 28px; position: relative; transition: border-color .2s, transform .2s; }
+.about-card::before { content: ''; position: absolute; top: -3px; left: 12px; width: 40px; height: 3px; background: var(--violet); }
+.about-card:hover { border-color: var(--violet); transform: translate(-2px,-2px); }
+.about-card-title { font-size: 0.45rem; color: var(--violet3); margin-bottom: 16px; letter-spacing: 2px; }
+.about-text { font-family: 'VT323', monospace; font-size: 1.15rem; color: var(--gray3); line-height: 1.7; letter-spacing: 0.5px; }
+
+.stat-bar-wrap { margin-top: 20px; }
+.stat-bar-item { margin-bottom: 14px; }
+.stat-bar-label { font-size: 0.38rem; color: var(--gray3); margin-bottom: 6px; letter-spacing: 1px; }
+.stat-bar-track { height: 8px; background: var(--card); border: 2px solid var(--border); position: relative; overflow: hidden; }
+.stat-bar-fill { height: 100%; background: linear-gradient(to right, var(--violet), var(--violet2)); width: 0; animation: fillBar 1.5s forwards; animation-delay: var(--delay, 0.2s); }
+@keyframes fillBar { from{width:0} to{width:var(--w)} }
+
+.tech-grid { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+.tech-badge { font-size: 0.38rem; padding: 8px 14px; border: 2px solid var(--gray1); color: var(--gray3); letter-spacing: 1px; background: var(--card); transition: all .15s; position: relative; overflow: hidden; }
+.tech-badge::after { content: ''; position: absolute; inset: 0; background: var(--violet); opacity: 0; transition: opacity .15s; }
+.tech-badge:hover { border-color: var(--violet2); color: var(--white); box-shadow: 0 0 12px var(--violet); transform: translate(-1px,-1px); }
+.tech-badge:hover::after { opacity: 0.1; }
+
+.projects-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+.project-card { background: var(--card); border: 3px solid var(--border); position: relative; transition: all .2s; overflow: hidden; cursor: pointer; }
+.project-card:hover { border-color: var(--violet); transform: translate(-3px,-3px); box-shadow: 6px 6px 0 var(--violet); }
+
+.project-card-screen { height: 140px; background: var(--dark); position: relative; overflow: hidden; border-bottom: 3px solid var(--border); }
+.project-card:hover .project-card-screen { border-bottom-color: var(--violet); }
+.scene-dots { position: absolute; inset: 0; background-image: radial-gradient(var(--violet) 1px, transparent 1px); background-size: 12px 12px; opacity: 0.12; }
+.project-icon { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); font-size: 2.4rem; filter: drop-shadow(0 0 12px var(--violet2)); animation: iconFloat 2s ease-in-out infinite; }
+@keyframes iconFloat { 0%,100%{transform:translate(-50%,-53%)} 50%{transform:translate(-50%,-47%)} }
+.project-num { position: absolute; top: 8px; left: 10px; font-size: 0.4rem; color: var(--violet2); letter-spacing: 1px; }
+.project-status { position: absolute; top: 8px; right: 10px; font-size: 0.35rem; padding: 4px 8px; letter-spacing: 1px; }
+.status-wip   { background: rgba(234,179,8,0.2);  color: #fbbf24; border: 1px solid #fbbf24; }
+.status-done  { background: rgba(34,197,94,0.2);  color: #4ade80; border: 1px solid #4ade80; }
+.status-soon  { background: rgba(124,58,237,0.2); color: var(--violet3); border: 1px solid var(--violet); }
+
+.project-body { padding: 18px 20px 20px; }
+.project-name { font-size: 0.52rem; color: var(--white); margin-bottom: 10px; letter-spacing: 1px; }
+.project-desc { font-family: 'VT323', monospace; font-size: 1.05rem; color: var(--gray2); line-height: 1.6; margin-bottom: 16px; }
+.project-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+.project-tag { font-size: 0.32rem; padding: 4px 8px; background: rgba(124,58,237,0.15); border: 1px solid var(--violet); color: var(--violet3); letter-spacing: 1px; }
+.project-links { display: flex; gap: 10px; }
+.project-link { font-size: 0.35rem; color: var(--gray3); text-decoration: none; padding: 6px 12px; border: 2px solid var(--gray1); letter-spacing: 1px; transition: all .15s; }
+.project-link:hover { border-color: var(--violet2); color: var(--violet3); background: rgba(124,58,237,0.1); }
+
+.timeline { position: relative; padding-left: 32px; }
+.timeline::before { content: ''; position: absolute; left: 0; top: 8px; bottom: 8px; width: 4px; background: repeating-linear-gradient(to bottom, var(--violet) 0, var(--violet) 8px, transparent 8px, transparent 12px); }
+.timeline-item { position: relative; margin-bottom: 36px; padding: 20px 24px; background: var(--panel); border: 2px solid var(--border); transition: border-color .2s; }
+.timeline-item:hover { border-color: var(--violet); }
+.timeline-item::before { content: '◆'; position: absolute; left: -46px; top: 18px; color: var(--violet2); font-size: 0.8rem; text-shadow: 0 0 8px var(--violet); }
+.tl-date { font-size: 0.38rem; color: var(--violet3); margin-bottom: 8px; letter-spacing: 2px; }
+.tl-title { font-size: 0.5rem; color: var(--white); margin-bottom: 10px; }
+.tl-body { font-family: 'VT323', monospace; font-size: 1.1rem; color: var(--gray2); line-height: 1.6; }
+
+.contact-box { background: var(--panel); border: 3px solid var(--violet); padding: 48px 40px; text-align: center; position: relative; box-shadow: 8px 8px 0 rgba(124,58,237,0.3); }
+.contact-box::before, .contact-box::after { content: '■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■ ■'; display: block; font-size: 0.35rem; color: var(--violet); letter-spacing: 2px; margin-bottom: 20px; overflow: hidden; white-space: nowrap; opacity: 0.4; }
+.contact-box::after { margin-bottom: 0; margin-top: 20px; }
+.contact-title { font-size: 0.7rem; color: var(--white); margin-bottom: 12px; text-shadow: 0 0 20px var(--violet2); }
+.contact-sub { font-family: 'VT323', monospace; font-size: 1.3rem; color: var(--gray2); margin-bottom: 36px; line-height: 1.6; }
+.contact-links { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+
+footer { text-align: center; padding: 32px 0 80px; border-top: 3px solid var(--border); }
+.footer-text { font-size: 0.38rem; color: var(--gray1); letter-spacing: 2px; line-height: 2.2; }
+.footer-text span { color: var(--violet2); }
+
+.insert-coin { font-size: 0.5rem; color: var(--violet3); text-align: center; padding: 24px; animation: blink 1.2s step-end infinite; letter-spacing: 3px; }
+
+.px-corners { position: relative; }
+.px-corners::before, .px-corners::after { content: ''; position: absolute; width: 10px; height: 10px; }
+.px-corners::before { top: -3px; left: -3px; border-top: 3px solid var(--violet2); border-left: 3px solid var(--violet2); }
+.px-corners::after { bottom: -3px; right: -3px; border-bottom: 3px solid var(--violet2); border-right: 3px solid var(--violet2); }
+
+@media (max-width: 640px) {
+  .about-grid { grid-template-columns: 1fr; }
+  .hero h1 { font-size: 1rem; }
+  .score-ui { display: none; }
+  nav { padding: 16px; }
+  .nav-links { gap: 16px; }
+}
+
+.reveal { opacity: 0; transform: translateY(16px); animation: revealUp .5s forwards; animation-delay: var(--rv, 0s); }
+@keyframes revealUp { to { opacity: 1; transform: none; } }
+</style>
+</head>
+<body>
+
+<div class="starfield" id="starfield"></div>
+<div class="ground-strip"></div>
+
+<div class="speed-lines">
+  <div class="speed-line" style="--sd:.35s;--delay2:.0s;width:80%"></div>
+  <div class="speed-line" style="--sd:.4s;--delay2:.08s;width:60%"></div>
+  <div class="speed-line" style="--sd:.3s;--delay2:.15s;width:90%"></div>
+  <div class="speed-line" style="--sd:.45s;--delay2:.05s;width:50%"></div>
+  <div class="speed-line" style="--sd:.38s;--delay2:.2s;width:70%"></div>
+</div>
+
+<div class="sprite-wrap">
+  <div class="sprite"></div>
+</div>
+
+<nav>
+  <div class="nav-logo">PLAYER_01.EXE</div>
+  <ul class="nav-links">
+    <li><a href="#sobre-mi">ABOUT</a></li>
+    <li><a href="#proyectos">STAGES</a></li>
+    <li><a href="#journey">JOURNEY</a></li>
+    <li><a href="#contacto">CONTACT</a></li>
+  </ul>
+</nav>
+
+<div class="container">
+
+  <!-- HERO -->
+  <section class="hero">
+    <!-- CAMBIO: hero tag más honesto y enfocado -->
+    <div class="hero-tag reveal" style="--rv:.1s">BACK-END DEVELOPER & QA AUTOMATION · AUTODIDACTA</div>
+    <h1 class="reveal" style="--rv:.2s">
+      <span class="line1">HOLA, SOY</span><br>
+      <span class="line2">NICOLÁS PEREIRA</span><br>
+      <!-- CAMBIO: eliminado "FOCUSED" ambiguo, queda claro el rol -->
+      <span class="line3">// BACK-END SPECIALIST</span>
+    </h1>
+    <p class="hero-sub reveal" style="--rv:.3s" id="typed-text">
+      Construyendo el mundo desde los servidores.<span class="typed-cursor"></span>
+    </p>
+    <div class="cta-row reveal" style="--rv:.4s">
+      <a href="#proyectos" class="btn btn-primary">▶ VER PROYECTOS</a>
+      <a href="#contacto" class="btn btn-ghost">✉ CONTACTAR</a>
+    </div>
+
+    <div class="score-ui reveal" style="--rv:.3s">
+      <div class="score-label">COMMITS</div>
+      <div class="score-val">∞∞∞∞</div>
+      <div class="score-label" style="margin-top:16px">RINGS</div>
+      <div class="rings-row">
+        <div class="ring" style="--rd:0s"></div>
+        <div class="ring" style="--rd:.15s"></div>
+        <div class="ring" style="--rd:.3s"></div>
+        <div class="ring" style="--rd:.45s"></div>
+        <div class="ring" style="--rd:.6s"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section class="section" id="sobre-mi">
+    <div class="section-header">
+      <span class="section-icon">🎮</span>
+      <span class="section-title">SOBRE MÍ · PLAYER_INFO</span>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="about-grid">
+      <div class="about-card reveal" style="--rv:.1s">
+        <div class="about-card-title">// BIO</div>
+        <!-- CAMBIO: bio más honesta, sin mencionar front -->
+        <p class="about-text">
+          Desarrollador Back-End autodidacta con foco en APIs, bases de datos y automatización. Aprendo construyendo proyectos reales con IA como herramienta de desarrollo.
+        </p>
+        <br>
+        <p class="about-text">
+          Me apasiona la lógica del servidor: cómo fluyen los datos, cómo se diseñan APIs limpias y cómo se automatizan procesos. El back-end es donde vive la lógica real.
+        </p>
+
+        <!-- CAMBIO: badges corregidos — solo tecnologías que realmente manejás -->
+        <div class="tech-grid" style="margin-top:20px">
+          <span class="tech-badge">Python</span>
+          <span class="tech-badge">FastAPI</span>
+          <span class="tech-badge">Node.js</span>
+          <span class="tech-badge">Express</span>
+          <span class="tech-badge">PostgreSQL</span>
+          <span class="tech-badge">pytest</span>
+          <span class="tech-badge">Playwright</span>
+          <span class="tech-badge">Git</span>
+          <span class="tech-badge">Supabase</span>
+          <span class="tech-badge">Cursor</span>
+          <span class="tech-badge">Claude Code</span>
+        </div>
+      </div>
+
+      <div class="about-card reveal" style="--rv:.2s">
+        <!-- CAMBIO: stat bars realistas y honestas, sin front inflado -->
+        <div class="about-card-title">// STATS · LVL ACTUAL</div>
+        <div class="stat-bar-wrap">
+          <div class="stat-bar-item">
+            <div class="stat-bar-label">BACK-END / APIs</div>
+            <div class="stat-bar-track"><div class="stat-bar-fill" style="--w:75%;--delay:.1s"></div></div>
+          </div>
+          <div class="stat-bar-item">
+            <div class="stat-bar-label">QA / TESTING</div>
+            <div class="stat-bar-track"><div class="stat-bar-fill" style="--w:70%;--delay:.2s"></div></div>
+          </div>
+          <div class="stat-bar-item">
+            <div class="stat-bar-label">BASES DE DATOS</div>
+            <div class="stat-bar-track"><div class="stat-bar-fill" style="--w:65%;--delay:.3s"></div></div>
+          </div>
+          <div class="stat-bar-item">
+            <div class="stat-bar-label">AUTOMATIZACIÓN</div>
+            <div class="stat-bar-track"><div class="stat-bar-fill" style="--w:60%;--delay:.4s"></div></div>
+          </div>
+          <div class="stat-bar-item">
+            <!-- CAMBIO: Docker marcado como "en progreso" honestamente -->
+            <div class="stat-bar-label">DEVOPS / DOCKER</div>
+            <div class="stat-bar-track"><div class="stat-bar-fill" style="--w:30%;--delay:.5s"></div></div>
+          </div>
+          <div class="stat-bar-item">
+            <div class="stat-bar-label">AUTODIDACTA POWER</div>
+            <div class="stat-bar-track"><div class="stat-bar-fill" style="--w:99%;--delay:.6s"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROYECTOS -->
+  <section class="section" id="proyectos">
+    <div class="section-header">
+      <span class="section-icon">🕹</span>
+      <span class="section-title">PROYECTOS · STAGE SELECT</span>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="insert-coin">— INSERT PROJECT TO CONTINUE —</div>
+
+    <div class="projects-grid" style="margin-top:24px">
+
+      <!-- CARD 1 -->
+      <div class="project-card reveal" style="--rv:.1s">
+        <div class="project-card-screen">
+          <div class="scene-dots"></div>
+          <div class="project-icon">🎉</div>
+          <div class="project-num">STAGE 01</div>
+          <div class="project-status status-done">CLEAR ✓</div>
+        </div>
+        <div class="project-body">
+          <div class="project-name">Invitación Digital</div>
+          <!-- CAMBIO: aclarado que es trabajo freelance real -->
+          <p class="project-desc">Trabajo freelance real. Invitación digital para fiesta de 15 años, construida con HTML, CSS y JavaScript. Proyecto entregado a cliente.</p>
+          <div class="project-tags">
+            <span class="project-tag">html</span>
+            <span class="project-tag">css</span>
+            <span class="project-tag">javascript</span>
+            <span class="project-tag">freelance</span>
+          </div>
+          <div class="project-links">
+            <a href="https://github.com/nicolaspereirasilvera23-source/Invitacion-Digital" target="_blank" rel="noopener noreferrer" class="project-link">{ } CÓDIGO</a>
+          </div>
+          <p style="font-family:'VT323',monospace;font-size:0.9rem;color:var(--gray1);margin-top:10px;letter-spacing:0.5px;">// demo no público · privacidad del cliente</p>
+        </div>
+      </div>
+
+      <!-- CARD 2 -->
+      <div class="project-card reveal" style="--rv:.2s">
+        <div class="project-card-screen">
+          <div class="scene-dots"></div>
+          <div class="project-icon">🗄️</div>
+          <div class="project-num">STAGE 02</div>
+          <div class="project-status status-wip">IN PROGRESS</div>
+        </div>
+        <div class="project-body">
+          <div class="project-name">ATTENDANCE API</div>
+          <!-- CAMBIO: descripción más profesional, menciona mejoras en curso -->
+          <p class="project-desc">API de asistencia para club de volleyball. Registro por PIN, autenticación y consulta a base de datos. En migración a PostgreSQL + JWT.</p>
+          <div class="project-tags">
+            <span class="project-tag">Python</span>
+            <span class="project-tag">FastAPI</span>
+            <span class="project-tag">PostgreSQL</span>
+            <span class="project-tag">pytest</span>
+          </div>
+          <div class="project-links">
+            <a href="https://attendancesvc.onrender.com" target="_blank" rel="noopener noreferrer" class="project-link">▶ DEMO</a>
+            <a href="https://github.com/nicolaspereirasilvera23-source/attendance-api.git" target="_blank" rel="noopener noreferrer" class="project-link">{ } CÓDIGO</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- CARD 3 -->
+      <div class="project-card reveal" style="--rv:.3s">
+        <div class="project-card-screen">
+          <div class="scene-dots"></div>
+          <div class="project-icon">🍔</div>
+          <div class="project-num">STAGE 03</div>
+          <div class="project-status status-soon">COMING SOON</div>
+        </div>
+        <div class="project-body">
+          <!-- CAMBIO: PedidoListo sin mencionar React ni NestJS — stack por definir -->
+          <div class="project-name">PedidoListo</div>
+          <p class="project-desc">API de pedidos para local de comida rápida. Gestión de órdenes, roles de usuario y autenticación. En desarrollo.</p>
+          <div class="project-tags">
+            <span class="project-tag">Python</span>
+            <span class="project-tag">FastAPI</span>
+            <span class="project-tag">PostgreSQL</span>
+            <span class="project-tag">JWT</span>
+          </div>
+          <div class="project-links">
+            <a href="https://github.com/nicolaspereirasilvera23-source/PedidoListo.git" target="_blank" rel="noopener noreferrer" class="project-link">{ } CÓDIGO</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- CARD 4 · QRLY -->
+      <div class="project-card reveal" style="--rv:.4s">
+        <div class="project-card-screen">
+          <div class="scene-dots"></div>
+          <div class="project-icon">📷</div>
+          <div class="project-num">STAGE 04</div>
+          <div class="project-status status-done">CLEAR ✓</div>
+        </div>
+        <div class="project-body">
+          <div class="project-name">QRLY · Album Web con QR</div>
+          <p class="project-desc">App web tipo SaaS: el anfitrión inicia sesión, crea un álbum digital y lo comparte con un código QR para eventos o fiestas; los invitados suben fotos sin registrarse. Back-end con Node.js (Express), PostgreSQL vía Supabase y front estático con HTML, CSS y JavaScript.</p>
+          <div class="project-tags">
+            <span class="project-tag">Node.js</span>
+            <span class="project-tag">Express</span>
+            <span class="project-tag">Supabase</span>
+            <span class="project-tag">PostgreSQL</span>
+            <span class="project-tag">HTML/CSS/JS</span>
+          </div>
+          <div class="project-links">
+            <a href="https://qrly-albumweb.onrender.com/" target="_blank" rel="noopener noreferrer" class="project-link">▶ DEMO</a>
+            <a href="https://github.com/nicolaspereirasilvera23-source/AlbumQR-WEb.git" target="_blank" rel="noopener noreferrer" class="project-link">{ } CÓDIGO</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- LEARNING JOURNEY -->
+  <section class="section" id="journey">
+    <div class="section-header">
+      <span class="section-icon">📜</span>
+      <span class="section-title">LEARNING JOURNEY · HISTORIAL</span>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="timeline">
+
+      <div class="timeline-item reveal" style="--rv:.1s">
+        <div class="tl-date">INICIO · 2024</div>
+        <div class="tl-title">PRIMER CONTACTO CON PROGRAMACIÓN</div>
+        <p class="tl-body">
+          Inicio en programación con enfoque autodidacta. Fundamentos de lógica,
+          primeras estructuras y contacto con HTML, CSS y JavaScript. Desarrollo
+          del pensamiento analítico orientado a resolver problemas reales.
+        </p>
+      </div>
+
+      <div class="timeline-item reveal" style="--rv:.2s">
+        <div class="tl-date">NIVEL 2</div>
+        <div class="tl-title">BACKEND CON PYTHON · APIs REST</div>
+        <p class="tl-body">
+          Especialización en back-end con Python y FastAPI. Desarrollo de APIs REST,
+          manejo de datos con PostgreSQL y validación con Postman. Proyectos reales:
+          Attendance API y automatizaciones administrativas para club deportivo.
+        </p>
+      </div>
+
+      <div class="timeline-item reveal" style="--rv:.3s">
+        <div class="tl-date">NIVEL 3</div>
+        <!-- CAMBIO: eliminada la mención a "transición a fullstack" -->
+        <div class="tl-title">NODE.JS · TESTING · QA AUTOMATION</div>
+        <p class="tl-body">
+          Incorporación de Node.js y Express como stack complementario. Introducción
+          al testing con pytest y Playwright. Foco en calidad de código, casos de
+          prueba automatizados y flujo de desarrollo asistido con IA (Cursor, Claude Code).
+        </p>
+      </div>
+
+      <div class="timeline-item reveal" style="--rv:.4s">
+        <div class="tl-date">NIVEL ACTUAL →</div>
+        <div class="tl-title">PORTFOLIO · BACK-END SPECIALIST</div>
+        <p class="tl-body">
+          Construcción activa de portfolio con proyectos reales y deployados.
+          Enfoque en back-end puro, testing y automatización. Preparado para
+          primer rol en IT como Back-End Developer o QA Junior en Uruguay.
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="section" id="contacto">
+    <div class="section-header">
+      <span class="section-icon">📡</span>
+      <span class="section-title">CONTACTO · ENVIAR SEÑAL</span>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="contact-box px-corners reveal" style="--rv:.1s">
+      <div class="contact-title">¿LISTO PARA COOPERAR?</div>
+      <p class="contact-sub">
+        Abierto a proyectos, colaboraciones y oportunidades de trabajo.<br>
+        El respawn está activado. No me pierdas.
+      </p>
+      <div class="contact-links">
+        <a href="mailto:nicolas.psilvera@gmail.com?subject=Contacto%20desde%20portfolio&body=Hola%20Nicolás,%20vi%20tu%20portfolio..." class="btn btn-primary">✉ EMAIL</a>
+        <a href="https://github.com/nicolaspereirasilvera23-source" target="_blank" rel="noopener noreferrer" class="btn btn-ghost">⌨ GITHUB</a>
+        <a href="https://www.linkedin.com/in/nicolas-psilvera" target="_blank" rel="noopener noreferrer" class="btn btn-ghost">🌐 LINKEDIN</a>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <p class="footer-text">
+    MADE WITH <span>♥</span> + DEMASIADO CAFÉ<br>
+    © 2026 · <span>[NICOLÁS PEREIRA]</span> · ALL RIGHTS RESERVED<br>
+    <span>LIVES: ∞ · STAGE: AUTODIDACTA · SCORE: INFINITO</span>
+  </p>
+</footer>
+
+<script>
+const sf = document.getElementById('starfield');
+for (let i = 0; i < 80; i++) {
+  const s = document.createElement('div');
+  s.className = 'star';
+  s.style.cssText = `
+    left:${Math.random()*100}%;
+    top:${Math.random()*100}%;
+    --d:${2+Math.random()*4}s;
+    --delay:${Math.random()*4}s;
+    opacity:${0.2+Math.random()*0.5};
+    width:${Math.random()>0.7?4:2}px;
+    height:${Math.random()>0.7?4:2}px;
+    background:${Math.random()>0.5?'#7c3aed':'#9898c8'};
+  `;
+  sf.appendChild(s);
+}
+
+const phrases = [
+  'Construyendo el mundo desde los servidores.',
+  'APIs, bases de datos, arquitecturas limpias.',
+  'Back-end specialist. Siempre.',
+  'Aprendizaje autodidacta al 100%.',
+  'El código nunca miente.',
+  'FastAPI + PostgreSQL + pytest = stack listo.'
+];
+let pi = 0, ci = 0, deleting = false;
+const el = document.getElementById('typed-text');
+
+function type() {
+  const phrase = phrases[pi];
+  if (!deleting) {
+    el.innerHTML = phrase.slice(0, ci+1) + '<span class="typed-cursor"></span>';
+    ci++;
+    if (ci === phrase.length) { deleting = true; setTimeout(type, 1800); return; }
+  } else {
+    el.innerHTML = phrase.slice(0, ci-1) + '<span class="typed-cursor"></span>';
+    ci--;
+    if (ci === 0) { deleting = false; pi = (pi+1) % phrases.length; }
+  }
+  setTimeout(type, deleting ? 40 : 70);
+}
+setTimeout(type, 1000);
+
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.style.animationPlayState = 'running';
+      io.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.reveal').forEach(el => {
+  el.style.animationPlayState = 'paused';
+  io.observe(el);
+});
+</script>
+</body>
+</html>
